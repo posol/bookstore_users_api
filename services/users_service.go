@@ -1,7 +1,10 @@
 package services
 
-import "github.com/posol/bookstore_users_api/domain/users"
+import (
+	"github.com/posol/bookstore_users_api/domain/users"
+	"github.com/posol/bookstore_users_api/utils/errors"
+)
 
-func CreateUser(user users.User) (*users.User, error) {
-	return nil, nil
+func CreateUser(user users.User) (*users.User, *errors.RestError) {
+	return &user, nil
 }
