@@ -3,6 +3,7 @@ package users
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/posol/bookstore_users_api/domain/users"
@@ -34,7 +35,21 @@ func CreateUser(c *gin.Context) {
 }
 
 func GetUser(c *gin.Context) {
-	c.String(http.StatusNotImplemented, "implement later")
+	userId, userError := strconv.ParseInt(c.Param("user_id"), 10, 64)
+	if userError != nil {
+		err := errors.NewBadRequestError("ivalid user id")
+		c.JSON(err.Status, err)
+		return
+	}
+	 
+	result, restError := services.GetUser(userId)
+	if restError != nil {
+		fmt.Println(restError)
+		c.JSON(restError.Status, restError)
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
 }
 
 func SearchUser(c *gin.Context) {
