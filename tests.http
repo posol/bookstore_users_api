@@ -1,0 +1,9 @@
+# create user
+POST http://localhost:8080/api/users
+Content-Type: application/json
+
+{
+  "first_name": "Aleksandr",
+  "last_name": "Poslovskii",
+  "email": "posol2008@gmail.com"
+}

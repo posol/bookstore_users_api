@@ -24,7 +24,7 @@ var (
 	schema   = os.Getenv(mysql_users_schema)
 )
 
-func int() {
+func init() {
 	dataSourceName := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8", user, password, host, schema)
 	var err error
 

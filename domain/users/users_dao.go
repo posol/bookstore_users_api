@@ -47,16 +47,5 @@ func (user *User) Save() *errors.RestError {
 	}
 	user.Id = userId
 
-	/*current := usersDB[user.Id]
-	if current != nil {
-		if current.Email == user.Email {
-			return errors.NewBadRequestError(fmt.Sprintf("email %s already registered", user.Email))
-		}
-		return errors.NewBadRequestError(fmt.Sprintf("user %d already exists", user.Id))
-	}
-
-	user.DateCreated = dates.GetNowString()
-
-	usersDB[user.Id] = user*/
 	return nil
 }
