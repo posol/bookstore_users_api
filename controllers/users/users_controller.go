@@ -41,7 +41,7 @@ func GetUser(c *gin.Context) {
 		c.JSON(err.Status, err)
 		return
 	}
-	 
+
 	result, restError := services.GetUser(userId)
 	if restError != nil {
 		fmt.Println(restError)
