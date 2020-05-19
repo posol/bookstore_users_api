@@ -1,4 +1,8 @@
-# create user
+### get user
+GET http://localhost:80/api/users/1
+Accept: application/json
+
+### create user
 POST http://localhost:8080/api/users
 Content-Type: application/json
 
