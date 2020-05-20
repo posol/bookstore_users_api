@@ -1,5 +1,5 @@
 ### get user
-GET http://localhost:80/api/users/1
+GET http://localhost:8080/api/users/50
 Accept: application/json
 
 ### create user
