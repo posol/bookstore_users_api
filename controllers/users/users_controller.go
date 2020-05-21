@@ -11,12 +11,18 @@ import (
 	"github.com/posol/bookstore_users_api/utils/errors"
 )
 
-func CreateUser(c *gin.Context) {
+func getUserId(userIdParam string) (int64, *errors.RestError) {
+	userId, err := strconv.ParseInt(userIdParam, 10, 64)
+	if err != nil {
+		return 0, errors.NewBadRequestError("user id should be a number")
+	}
+	return userId, nil
+}
+
+func Create(c *gin.Context) {
 	fmt.Println("new request...")
 	var user users.User
 	if err := c.ShouldBindJSON(&user); err != nil {
-		// TODO: handle json err
-		fmt.Println(err)
 		restError := errors.NewBadRequestError("invalid json body")
 		c.JSON(restError.Status, restError)
 		return
@@ -25,8 +31,6 @@ func CreateUser(c *gin.Context) {
 
 	result, restError := services.CreateUser(user)
 	if restError != nil {
-		fmt.Println(restError)
-		// TODO: handle user creation error
 		c.JSON(restError.Status, restError)
 		return
 	}
@@ -34,11 +38,10 @@ func CreateUser(c *gin.Context) {
 	c.JSON(http.StatusCreated, result)
 }
 
-func GetUser(c *gin.Context) {
-	userId, userError := strconv.ParseInt(c.Param("user_id"), 10, 64)
-	if userError != nil {
-		err := errors.NewBadRequestError("invalid user id")
-		c.JSON(err.Status, err)
+func Get(c *gin.Context) {
+	userId, idErr := getUserId(c.Param("user_id"))
+	if idErr != nil {
+		c.JSON(idErr.Status, idErr)
 		return
 	}
 
@@ -52,19 +55,16 @@ func GetUser(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
-func UpdateUser(c *gin.Context) {
-	userId, userError := strconv.ParseInt(c.Param("user_id"), 10, 64)
-	if userError != nil {
-		err := errors.NewBadRequestError("invalid user id")
-		c.JSON(err.Status, err)
+func Update(c *gin.Context) {
+	userId, idErr := getUserId(c.Param("user_id"))
+	if idErr != nil {
+		c.JSON(idErr.Status, idErr)
 		return
 	}
 
 	fmt.Println("new request...")
 	var user users.User
 	if err := c.ShouldBindJSON(&user); err != nil {
-		// TODO: handle json err
-		fmt.Println(err)
 		restError := errors.NewBadRequestError("invalid json body")
 		c.JSON(restError.Status, restError)
 		return
@@ -77,8 +77,6 @@ func UpdateUser(c *gin.Context) {
 
 	result, restError := services.UpdateUser(isPartial, user)
 	if restError != nil {
-		fmt.Println(restError)
-		// TODO: handle user creation error
 		c.JSON(restError.Status, restError)
 		return
 	}
@@ -86,6 +84,20 @@ func UpdateUser(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
-func SearchUser(c *gin.Context) {
+func Delete(c *gin.Context) {
+	userId, idErr := getUserId(c.Param("user_id"))
+	if idErr != nil {
+		c.JSON(idErr.Status, idErr)
+		return
+	}
+
+	if err := services.DeleteUser(userId); err != nil {
+		c.JSON(err.Status, err)
+		return
+	}
+	c.JSON(http.StatusOK, map[string]string{"status": "deleted"})
+}
+
+func Search(c *gin.Context) {
 	c.String(http.StatusNotImplemented, "implement later")
 }

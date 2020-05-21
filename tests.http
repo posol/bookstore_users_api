@@ -31,3 +31,7 @@ Content-Type: application/json
   "email": "posol2008@gmail.com",
   "date_created": "Tue May 19 08:07:57 +0000 UTC 2020"
 }
+
+### delete user
+DELETE http://localhost:8080/api/users/5
+Content-Type: application/json
