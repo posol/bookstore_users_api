@@ -11,6 +11,7 @@ const (
 	indexUniqueEmail = "email_uindex"
 	queryInsertUser  = "insert into users(first_name, last_name, email, date_created) values(?, ?, ?, ?);"
 	queryGetUserById = "select id, first_name, last_name, email, date_created from users where id = ?;"
+	queryUpdateUser  = "UPDATE users SET first_name = ?, last_name = ?, email = ? WHERE id = ?;"
 )
 
 func (user *User) Get() *errors.RestError {
@@ -48,5 +49,19 @@ func (user *User) Save() *errors.RestError {
 	}
 	user.Id = userId
 
+	return nil
+}
+
+func (user *User) Update() *errors.RestError {
+	stmt, err := users_db.Client.Prepare(queryUpdateUser)
+	if err != nil {
+		return errors.NewIntrenalServerError(err.Error())
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(user.FirstName, user.LastName, user.Email, user.Id)
+	if err != nil {
+		return mysql_errors.ParseError(err)
+	}
 	return nil
 }

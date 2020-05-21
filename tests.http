@@ -1,5 +1,5 @@
 ### get user
-GET http://localhost:8080/api/users/50
+GET http://localhost:8080/api/users/5
 Accept: application/json
 
 ### create user
@@ -10,4 +10,24 @@ Content-Type: application/json
   "first_name": "Aleksandr",
   "last_name": "Poslovskii",
   "email": "posol2008@gmail.com"
+}
+
+### update delta user
+PATCH http://localhost:8080/api/users/5
+Content-Type: application/json
+
+{
+  "email": "posol2008@gmail.com2"
+}
+
+### update full user
+PUT http://localhost:8080/api/users/5
+Content-Type: application/json
+
+{
+  "id": 5,
+  "first_name": "Aleksandr",
+  "last_name": "Poslovskiy",
+  "email": "posol2008@gmail.com",
+  "date_created": "Tue May 19 08:07:57 +0000 UTC 2020"
 }
