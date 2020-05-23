@@ -1,6 +1,7 @@
 package mysql_errors
 
 import (
+	"fmt"
 	"github.com/go-sql-driver/mysql"
 	"github.com/posol/bookstore_users_api/utils/errors"
 	"strings"
@@ -11,6 +12,7 @@ const (
 )
 
 func ParseError(err error) *errors.RestError {
+	fmt.Println("err - ", err)
 	sqlErr, ok := err.(*mysql.MySQLError)
 	if !ok {
 		if strings.Contains(err.Error(), errorsNoRows) {
@@ -24,5 +26,5 @@ func ParseError(err error) *errors.RestError {
 	case 1062:
 		return errors.NewBadRequestError("invalid data")
 	}
-	return errors.NewIntrenalServerError("error processing request")
+	return errors.NewIntrenalServerError("error processing db request")
 }

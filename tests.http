@@ -1,5 +1,9 @@
+### search user by status
+GET http://localhost:8080/api/internal/users/search?status=active
+Accept: application/json
+
 ### get user
-GET http://localhost:8080/api/users/5
+GET http://localhost:8080/api/users/25
 Accept: application/json
 
 ### create user
@@ -9,11 +13,12 @@ Content-Type: application/json
 {
   "first_name": "Aleksandr",
   "last_name": "Poslovskii",
-  "email": "posol2008@gmail.com"
+  "email": "posol2008@gmail.com",
+  "password": "123"
 }
 
 ### update delta user
-PATCH http://localhost:8080/api/users/5
+PATCH http://localhost:8080/api/users/20
 Content-Type: application/json
 
 {
@@ -21,17 +26,17 @@ Content-Type: application/json
 }
 
 ### update full user
-PUT http://localhost:8080/api/users/5
+PUT http://localhost:8080/api/users/24
 Content-Type: application/json
 
 {
   "id": 5,
   "first_name": "Aleksandr",
-  "last_name": "Poslovskiy",
+  "last_name": "Poslovskii",
   "email": "posol2008@gmail.com",
   "date_created": "Tue May 19 08:07:57 +0000 UTC 2020"
 }
 
 ### delete user
-DELETE http://localhost:8080/api/users/5
+DELETE http://localhost:8080/api/users/22
 Content-Type: application/json

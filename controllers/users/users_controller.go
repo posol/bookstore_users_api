@@ -20,7 +20,6 @@ func getUserId(userIdParam string) (int64, *errors.RestError) {
 }
 
 func Create(c *gin.Context) {
-	fmt.Println("new request...")
 	var user users.User
 	if err := c.ShouldBindJSON(&user); err != nil {
 		restError := errors.NewBadRequestError("invalid json body")
@@ -99,5 +98,12 @@ func Delete(c *gin.Context) {
 }
 
 func Search(c *gin.Context) {
-	c.String(http.StatusNotImplemented, "implement later")
+	status := c.Query("status")
+
+	users, err := services.Search(status)
+	if err != nil {
+		c.JSON(err.Status, err)
+		return
+	}
+	c.JSON(http.StatusOK, users)
 }
