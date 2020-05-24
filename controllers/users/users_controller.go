@@ -11,14 +11,6 @@ import (
 	"github.com/posol/bookstore_users_api/utils/errors"
 )
 
-func getUserId(userIdParam string) (int64, *errors.RestError) {
-	userId, err := strconv.ParseInt(userIdParam, 10, 64)
-	if err != nil {
-		return 0, errors.NewBadRequestError("user id should be a number")
-	}
-	return userId, nil
-}
-
 func Create(c *gin.Context) {
 	var user users.User
 	if err := c.ShouldBindJSON(&user); err != nil {
@@ -33,8 +25,7 @@ func Create(c *gin.Context) {
 		c.JSON(restError.Status, restError)
 		return
 	}
-
-	c.JSON(http.StatusCreated, result)
+	c.JSON(http.StatusCreated, result.Marshall(c.GetHeader("X-Public") == "true"))
 }
 
 func Get(c *gin.Context) {
@@ -44,14 +35,13 @@ func Get(c *gin.Context) {
 		return
 	}
 
-	result, restError := services.GetUser(userId)
+	user, restError := services.GetUser(userId)
 	if restError != nil {
 		fmt.Println(restError)
 		c.JSON(restError.Status, restError)
 		return
 	}
-
-	c.JSON(http.StatusOK, result)
+	c.JSON(http.StatusOK, user.Marshall(c.GetHeader("X-Public") == "true"))
 }
 
 func Update(c *gin.Context) {
@@ -79,8 +69,7 @@ func Update(c *gin.Context) {
 		c.JSON(restError.Status, restError)
 		return
 	}
-
-	c.JSON(http.StatusOK, result)
+	c.JSON(http.StatusOK, result.Marshall(c.GetHeader("X-Public") == "true"))
 }
 
 func Delete(c *gin.Context) {
@@ -105,5 +94,13 @@ func Search(c *gin.Context) {
 		c.JSON(err.Status, err)
 		return
 	}
-	c.JSON(http.StatusOK, users)
+	c.JSON(http.StatusOK, users.Marshall(c.GetHeader("X-Public") == "true"))
+}
+
+func getUserId(userIdParam string) (int64, *errors.RestError) {
+	userId, err := strconv.ParseInt(userIdParam, 10, 64)
+	if err != nil {
+		return 0, errors.NewBadRequestError("user id should be a number")
+	}
+	return userId, nil
 }

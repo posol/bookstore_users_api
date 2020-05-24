@@ -69,7 +69,7 @@ func DeleteUser(userId int64) *errors.RestError {
 
 }
 
-func Search(status string) ([]users.User, *errors.RestError) {
+func Search(status string) (users.Users, *errors.RestError) {
 	dao := &users.User{}
 	return dao.FindByStatus(status)
 }

@@ -2,9 +2,14 @@
 GET http://localhost:8080/api/internal/users/search?status=active
 Accept: application/json
 
-### get user
+### get private user
 GET http://localhost:8080/api/users/25
 Accept: application/json
+
+### get public user
+GET http://localhost:8080/api/users/25
+Accept: application/json
+X-Public: true
 
 ### create user
 POST http://localhost:8080/api/users

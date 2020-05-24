@@ -1,8 +1,9 @@
 package users
 
 import (
-	"github.com/posol/bookstore_users_api/utils/errors"
 	"strings"
+
+	"github.com/posol/bookstore_users_api/utils/errors"
 )
 
 const (
@@ -18,6 +19,8 @@ type User struct {
 	Status      string `json:"status"`
 	Password    string `json:"password"`
 }
+
+type Users []User
 
 func (user *User) Validate() *errors.RestError {
 	user.FirstName = strings.TrimSpace(user.FirstName)
