@@ -2,6 +2,9 @@ package users
 
 import (
 	"fmt"
+	"strings"
+
+	"github.com/posol/bookstore_users_api/utils/mysql_errors"
 
 	"github.com/posol/bookstore_users_api/datasources/mysql/users_db"
 	"github.com/posol/bookstore_users_api/logger"
@@ -9,15 +12,16 @@ import (
 )
 
 const (
-	queryInsertUser       = "insert into users(first_name, last_name, email, date_created, password, status) values(?, ?, ?, ?, ?, ?);"
-	queryGetUserById      = "select id, first_name, last_name, email, date_created, status from users where id = ?;"
-	queryUpdateUser       = "UPDATE users SET first_name = ?, last_name = ?, email = ? WHERE id = ?;"
-	queryDeleteUser       = "delete from users where id=?;"
-	queryFindUserByStatus = "select id, first_name, last_name, email, date_created, status from users where status=?;"
+	queryInsertUser             = "insert into users(first_name, last_name, email, date_created, password, status) values(?, ?, ?, ?, ?, ?);"
+	queryFindById               = "select id, first_name, last_name, email, date_created, status from users where id = ?;"
+	queryUpdateUser             = "UPDATE users SET first_name = ?, last_name = ?, email = ? WHERE id = ?;"
+	queryDeleteUser             = "delete from users where id=?;"
+	queryFindByStatus           = "select id, first_name, last_name, email, date_created, status from users where status=?;"
+	queryFindByEmailAndPassword = "select id, first_name, last_name, email, date_created, status from users where email = ? and password = ? and status = ?;"
 )
 
 func (user *User) Get() *errors.RestError {
-	stmt, err := users_db.Client.Prepare(queryGetUserById)
+	stmt, err := users_db.Client.Prepare(queryFindById)
 	if err != nil {
 		logger.Error("error when trying to prepare get user statement", err)
 		return errors.NewIntrenalServerError("database error")
@@ -28,7 +32,6 @@ func (user *User) Get() *errors.RestError {
 	if getErr := result.Scan(&user.Id, &user.FirstName, &user.LastName, &user.Email, &user.DateCreated, &user.Status); getErr != nil {
 		logger.Error("error when trying to get user by id", getErr)
 		return errors.NewIntrenalServerError("database error")
-		//return mysql_errors.ParseError(getErr)
 	}
 
 	return nil
@@ -90,7 +93,7 @@ func (user *User) Delete() *errors.RestError {
 }
 
 func (user *User) FindByStatus(status string) ([]User, *errors.RestError) {
-	stmt, err := users_db.Client.Prepare(queryFindUserByStatus)
+	stmt, err := users_db.Client.Prepare(queryFindByStatus)
 	if err != nil {
 		logger.Error("error when trying to prepare find users by status statement", err)
 		return nil, errors.NewIntrenalServerError("database error")
@@ -107,7 +110,7 @@ func (user *User) FindByStatus(status string) ([]User, *errors.RestError) {
 	results := make([]User, 0)
 	for rows.Next() {
 		var user User
-		if err := rows.Scan(&user.Id, &user.FirstName, &user.LastName, &user.Email, &user.DateCreated, &user.Status, &user.Password); err != nil {
+		if err := rows.Scan(&user.Id, &user.FirstName, &user.LastName, &user.Email, &user.DateCreated, &user.Status); err != nil {
 			logger.Error("error when scan user row  into users struct", err)
 			return nil, errors.NewIntrenalServerError("database error")
 		}
@@ -118,4 +121,24 @@ func (user *User) FindByStatus(status string) ([]User, *errors.RestError) {
 		return nil, errors.NewNotFoundError(fmt.Sprintf("no users matching status %s", status))
 	}
 	return results, nil
+}
+
+func (user *User) FindByEmailAndPassword() *errors.RestError {
+	stmt, err := users_db.Client.Prepare(queryFindByEmailAndPassword)
+	if err != nil {
+		logger.Error("error when trying to prepare get user by email and password statement", err)
+		return errors.NewIntrenalServerError("database error")
+	}
+	defer stmt.Close()
+
+	result := stmt.QueryRow(user.Email, user.Password, StatusActive)
+	if getErr := result.Scan(&user.Id, &user.FirstName, &user.LastName, &user.Email, &user.DateCreated, &user.Status); getErr != nil {
+		if strings.Contains(getErr.Error(), mysql_errors.ErrorsNoRows) {
+			return errors.NewNotFoundError("invalid user credentials")
+		}
+		logger.Error("error when trying to get user by email and password", getErr)
+		return errors.NewIntrenalServerError("database error")
+	}
+
+	return nil
 }
