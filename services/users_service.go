@@ -11,9 +11,6 @@ var (
 	UserService userServiceInterface = &userService{}
 )
 
-type userService struct {
-}
-
 type userServiceInterface interface {
 	GetUser(int64) (*users.User, *errors.RestError)
 	CreateUser(users.User) (*users.User, *errors.RestError)
@@ -21,6 +18,9 @@ type userServiceInterface interface {
 	DeleteUser(int64) *errors.RestError
 	SearchUser(string) (users.Users, *errors.RestError)
 	LoginUser(users.LoginRequest) (*users.User, *errors.RestError)
+}
+
+type userService struct {
 }
 
 func (u *userService) GetUser(userId int64) (*users.User, *errors.RestError) {
